@@ -880,3 +880,4 @@ def remove_whishlist(request, id):
     return redirect('Whishlist')
 
 
+print("HEllo")
