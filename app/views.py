@@ -31,7 +31,7 @@ def cart(request):
     ct = addcart.objects.filter(user=uid)
 
     print(ct)
-    
+
     sub_total = 0
     charge = 50
     l1 = []
@@ -368,12 +368,16 @@ def billing_view(request):
         
         billing_address.objects.create(user=uid,f_name=f_name,l_name=l_name,company_name=company_name,country=country,address=address,city=city,zip_code=zip_code,mobile=mobile,email=uid.email)
         con={'count':count,"w_count":w_count}
-        return render(request,"checkout.html",con)
+        return render(request,"order.html",con)
     else:
         con={'count':count}
         return render(request,"checkout.html",con)
 
-
+def show_orders(request):
+    uid=User.objects.get(email=request.session['email'])
+    ord=Order.objects.filter(user_id=uid)
+    
+    return render(request,"order.html")
 
 
 def apply_coupon(request):
@@ -755,7 +759,7 @@ def forget(request):
 #         email=request.POST['email']
 #         password=request.POST['password']
 #         c_password=request.POST['c_password']
-        
+            
 #         try:
 #             uid=User.objects.get(email=email)
 #             if uid.email==email:
@@ -880,4 +884,3 @@ def remove_whishlist(request, id):
     return redirect('Whishlist')
 
 
-print("HEllo")
