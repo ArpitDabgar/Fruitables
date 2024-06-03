@@ -38,7 +38,7 @@
 
         <!-- Checkout Page Start -->
         <div class="container-fluid py-5">
-            <div class="container py-5">
+            <div class="container">
                 <h1 class="mb-4">Billing details</h1>
                 <form action="{% url 'billing_view' %}" method="POST">
                     {% csrf_token %}
@@ -136,50 +136,61 @@
                                            
                                
                                          
-                                            
-    <!--                                           
-                                                <td colspan="3" class="py-5">
-                                                    <div class="form-check text-start">
-                                                        <input type="checkbox" class="form-check-input bg-primary border-0" id="Shipping-1" name="Shipping-1" value="Shipping">
-                                                        <label class="form-check-label" for="Shipping-1">Shipping  {{charge}}</label>
-                                                    </div>
-                                                
-                                            
-                                                </td> -->
+                                          
                                         </tr>
+                                    <tr>
                                         <td >
                                             <p >Discount Codes</p> </td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
                                            <td> <p>{{discount}}</p></td>
-                                       
+                                        </tr>
 
                                            
-                                        <tr>
-                                            <th scope="row">
-                                            </th>
+                                      
+                                            <!-- <th scope="row">
+                                            </th> -->
+                                            <tr>
                                             <td >
-                                                <p class="text-dark text-uppercase" style="    margin-left: -152px;">TOTAL</p>
+                                                <p class="text-dark text-uppercase" style="    margin-left:0px;">TOTAL</p>
                                             </td>
+                                            <td></td>
                                             <td></td>
                                             <td></td>
                                             <td>
-                                                <div class="">
+                                                
                                                     <p class=" text-dark">{{t_price}}</p>
-                                                </div>
+                                               
                                             </td>
+
                                         </tr>
+
+
+                                           
+                                      
+
+                                    
                                     </tbody>
                                     
                                 </table>
+                                <br/>
+                                <tr>
+                                    <td><button style="width: 430px;height:50px;background-color:#81C408;border:none;color:white;font-size:20px;font-weight:700;border-radius:10px">Place Order</button>
+                                    
+                                    
+                                    
+                                    
+                                    </td>
+                                </tr>
+
                             </div>
                            
-                            <div class="row g-4 text-center align-items-center justify-content-center pt-4" >
+                            <!-- <div class="row g-4 text-center align-items-center justify-content-center pt-4" >
                           
-                                <a href="{% url order %}" onclick="document.getElementById('razorpayForm').submit();">
-                                    <div id="razorpayForm" style="background-color: red;" class="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary">
-                                        <script src="https://checkout.razorpay.com/v1/checkout.js"
+                                <a href="#" onclick="document.getElementById('razorpayForm').submit();" class="w-100">
+                                    <div id="razorpayForm" style="background-color: red;" class="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary" style="width: 650px;">
+                                        <script src="https://checkout.razorpay.com/v1/checkout.js" 
                                                 data-key="rzp_test_bilBagOBVTi4lE"
                                                 data-amount="{{response.amount}}"
                                                 data-currency="{{response.currency}}"
@@ -197,9 +208,16 @@
 
 
 
-                            </div>
+                            </div> -->
                             
                         </div>
+
+
+
+
+
+
+                        
                         
                     </div>
                

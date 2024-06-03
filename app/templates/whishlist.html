@@ -39,8 +39,11 @@
 <img style="height: 300px;width:300px" src="{% static 'img\whish3.png' %}">
 <!-- <h4 style="color: rgb(18, 17, 17);">Your WhishList Is Empty</h4> -->
 </div>
+
+
 <div style="text-align: center;">
-<a style="align-items: center;" href="{% url 'shop' %}" class="btn btn-danger     cart-btn-transform m-3" data-abc="true">Continue To Shopping</a>
+
+<a style="align-items: center;" href="{% url 'shop' %}" class="btn btn-danger     cart-btn-transform m-3" data-abc="true" >Continue To Shopping</a>
 </div>
     {% else %}
 
@@ -98,9 +101,11 @@
                             justify-content: center;
                         }
                     </style>
+
+                    <br/>
                     
                     <div class="center-button">
-                        <a href="{% url 'shop' %}"><button class="btn border-secondary rounded-pill px-2 py-2 text-danger" type="button">Continue Shopping</button></a>
+                        <a href="{% url 'shop' %}"><button class="btn   px-2 py-2 text-light" type="button" style="background-color: #81C408;">Continue Shopping</button></a>
                     </div>
                     
                             

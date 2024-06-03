@@ -74,7 +74,7 @@
 
           </div>
 
-          <h3 style="color: brown;" align="center">{% for msg in messages %}{{msg}}{% endfor %}</h3>
+          <h3 style="color: #81C408;" align="center">{% for msg in messages %}{{msg}}{% endfor %}</h3>
         </div>
       </div>
       <div class="row g-4">
@@ -89,7 +89,7 @@
                     {% for i in cat %}
                     <div class="d-flex justify-content-between fruite-name">
 
-                      <a href="/shop?cat2={{i.id}}"><i class="fas fa-apple-alt me-2"></i>{{i.name1}}</a>
+                      <a href="/shop?cat2={{i.id}}" style="color:black;">{{i.name1}}</a>
                       <span>{{count}}</span>
 
                     </div>
@@ -107,7 +107,7 @@
                 <h4 class="mb-2">Price</h4>
                 {% for i in piz %}
              
-                <a href="/shop?piz2={{i.id}}" style="color:green;font-size:large-50px"> &#8377; {{i.price1}}</a><br>
+                <a href="/shop?piz2={{i.id}}" style="color:black;font-size:large-50px"> &#8377; {{i.price1}}</a><br>
                 {% endfor %}
               </div>
 
@@ -124,6 +124,8 @@
                       <input type="range" class="form-range w-100" id="rangeInput"   value="{{max1}}" oninput="amount.value=rangeInput.value" min="0" max="1500" name="max1">
                     
                       <output id="amount" name="amount" for="rangeInput">{{max1}}</output>
+
+                      <br/>
                       <input type="submit"  value="Submit" >
                   </div>
               </div>
@@ -135,7 +137,7 @@
 
 
             <div class="col-lg-12">
-              <div class="mb-3">
+              <div class="mb-3" style="color: black;">
                 <h4>Additional</h4>
                 <div class="mb-2">
                   <input type="radio" class="me-2" id="Categories-1" name="Categories-1" value="Beverages" />
@@ -175,9 +177,9 @@
                     <i class="fa fa-star"></i>
                   </div>
                   <div class="d-flex mb-2">
-                    <h5 class="fw-bold me-2">2.99 $</h5>
+                    <h5 class="fw-bold me-2">$ 2.99 </h5>
                     <h5 class="text-danger text-decoration-line-through">
-                      4.11 $
+                      $ 4.11 
                     </h5>
                   </div>
                 </div>
@@ -196,9 +198,9 @@
                     <i class="fa fa-star"></i>
                   </div>
                   <div class="d-flex mb-2">
-                    <h5 class="fw-bold me-2">2.99 $</h5>
+                    <h5 class="fw-bold me-2">$ 2.99</h5>
                     <h5 class="text-danger text-decoration-line-through">
-                      4.11 $
+                      $ 4.11 
                     </h5>
                   </div>
                 </div>
@@ -217,9 +219,9 @@
                   <i class="fa fa-star"></i>
                 </div>
                   <div class="d-flex mb-2">
-                    <h5 class="fw-bold me-2">2.99 $</h5>
+                    <h5 class="fw-bold me-2">$ 2.99</h5>
                     <h5 class="text-danger text-decoration-line-through">
-                      4.11 $
+                    $ 4.11 
                     </h5>
                   </div>
                 </div>
@@ -266,25 +268,30 @@
                   <i class="fa-solid fa-heart "  style="color: gray;font-size :21px;"></i>
                 </a>  
                 {% endif %}
-                <div class="d-flex mb-4">
-                  <i {% if i.star < 1 %} class="fa fa-star" {% else %} class="fa fa-star text-warning" {% endif %}></i>
-                  <i {% if i.star < 2 %} class="fa fa-star " {% else %} class="fa fa-star text-warning" {% endif %}></i>
-                  <i {% if i.star < 3 %} class="fa fa-star " {% else %} class="fa fa-star text-warning" {% endif %}></i>
-                  <i {% if i.star < 4 %} class="fa fa-star" {% else %} class="fa fa-star text-warning" {% endif %}></i>
-                  <i {% if i.star < 5 %} class="fa fa-star" {% else %} class="fa fa-star text-warning" {% endif %}></i>
-                </div>
-                <div class="p-4 border border-secondary border-top-0 rounded-bottom" style="height: 200px;">
-                  <h4>{{i.name}}</h4>
-                  <h5>( 1 Kg )</h5>
+               
+                <div class="p-4 border border-secondary border-top-0 rounded-bottom" style="height: 220px;">
+                  <h5>{{i.name}}</h5>
+                  
                   <div class="d-flex justify-content-between flex-lg-wrap">
                     <p class="text-dark fs-5 fw-bold mb-0">&#8377;{{i.price}}</p>
+
+                   
                   </div>
-                  <div style="display: flex; gap:20px">
-                    <a href="{% url 'shop_detail1' i.id %}" class="btn border border-secondary rounded-pill px-3 text-primary"><i
-                        class="fa-regular fa-eye"></i>
+
+                  <div class="d-flex mb-4 mt-3" >
+                    <i {% if i.star < 1 %} class="fa fa-star" {% else %} class="fa fa-star text-warning" {% endif %}></i>
+                    <i {% if i.star < 2 %} class="fa fa-star " {% else %} class="fa fa-star text-warning" {% endif %}></i>
+                    <i {% if i.star < 3 %} class="fa fa-star " {% else %} class="fa fa-star text-warning" {% endif %}></i>
+                    <i {% if i.star < 4 %} class="fa fa-star" {% else %} class="fa fa-star text-warning" {% endif %}></i>
+                    <i {% if i.star < 5 %} class="fa fa-star" {% else %} class="fa fa-star text-warning" {% endif %}></i>
+                  </div>
+                  
+                  <div style="display: flex; gap:20px;">
+                    <a href="{% url 'shop_detail1' i.id %}" class="btn border  rounded-pill px-3 text-primary"  style="background-color: #81C408;color:white"><i
+                        class="fa-regular fa-eye" style="color: white;"></i>
                     </a>
-                    <a href="{% url 'add_to_cart' i.id %}" class="btn border border-secondary rounded-pill px-3 text-primary"
-                      style="font-size: 13px;"><i class="fa fa-shopping-bag me-1 text-primary"></i>
+                    <a href="{% url 'add_to_cart' i.id %}" class="btn color:white rounded-pill px-3 "
+                      style="font-size: 13px;background-color: #81C408;color:white" ><i class="fa fa-shopping-bag me-1" style="color: white;"></i>
                       Add to cart</a>
                   </div>
                   <br>
