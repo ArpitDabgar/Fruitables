@@ -166,8 +166,8 @@ def order_delete(request,id):
 #     amount = t_price*100 #100 here means 1 dollar,1 rupree if currency INR
 #     client = razorpay.Client(auth=('rzp_test_uqhoYnBzHjbvGF','jEhBs6Qp9hMeGfq5FyU45cVi'))
 #     response = client.order.create({'amount':amount,'currency':'INR','payment_capture':1})
-#     print(response,"****************")      
-    
+#     print(response,"**********")      
+        
 #     contaxt={
 
 
@@ -274,8 +274,8 @@ def checkout(request):
 #         zip_code=request.POST['zip_code']
 #         mobile=request.POST['mobile']
 #         email=request.POST['email']
-        
-        
+
+            
 #         billing_address.objects.create(user=uid,
 #                                        f_name=f_name,
 #                                        l_name=l_name,
@@ -539,7 +539,7 @@ def filter_price(request):
         contaxt={
             "pp":pp,
             "max1":max1,
-
+        
                 
         }
         return render(request,"shop.html",contaxt)
@@ -563,7 +563,14 @@ def price1(request):
     }
     return render(request,"shop.html",contaxt)
     
-
+def search(request):
+    srh=request.GET.get("srh")
+    print(srh)
+    if srh:
+        pid=product.objects.filter(name__icontains=srh)
+        print(pid)
+    con={"pid":pid,"srh":srh}
+    return render(request,"shop.html",con)
 
 def testimonial(request):
     return render(request,"testimonial.html")

@@ -77,10 +77,8 @@ class addcart(models.Model):
     
     def __str__(self) -> str:
         return self.name
-    
-    
      
-    
+     
     
 class billing_address(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True)

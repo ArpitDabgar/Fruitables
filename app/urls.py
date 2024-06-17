@@ -50,4 +50,6 @@ urlpatterns = [
     path("Whishlist",views.Whishlist,name="Whishlist"),
     path("add_whishlist/<int:id>",views.add_whishlist,name="add_whishlist"),
     path("remove_whishlist/<int:id>",views.remove_whishlist,name="remove_whishlist"),   
+    path('search', views.search, name='search'),
+    
 ]
