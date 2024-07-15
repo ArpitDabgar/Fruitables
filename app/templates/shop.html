@@ -271,14 +271,14 @@
                   <i class="fa-solid fa-heart "  style="color: gray;font-size :21px;"></i>
                 </a>  
                 {% endif %}
-               
+                
                 <div class="p-4 border border-secondary border-top-0 rounded-bottom" style="height: 220px;">
                   <h5>{{i.name}}</h5>
-                  
+                    
                   <div class="d-flex justify-content-between flex-lg-wrap">
                     <p class="text-dark fs-5 fw-bold mb-0">&#8377;{{i.price}}</p>
 
-                   
+                    
                   </div>
 
                   <div class="d-flex mb-4 mt-3" >
@@ -311,9 +311,12 @@
                 <a href="?page=1" class="rounded">First</a>
                 <a href="?page={{pp.previous_page_number}}" class="rounded">Previous</a>
                 {% endif %}
-                {% for i in pp.paginator.page_range %}
+                {% for i in show_page %}
                 {% if i == pp.number %}
+                
                 <a href="?page={{i}}"  class="active rounded">{{i}}</a>
+                {% elif i == "..." %}
+                <a href="..." class="rounded">...</a>
                 {% else %}
                 <a href="?page={{i}}" class="rounded">{{i}}</a>
                 {% endif %}

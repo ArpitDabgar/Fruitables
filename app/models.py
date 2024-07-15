@@ -27,6 +27,7 @@ class price(models.Model):
     def __str__(self) -> str:
         return self.price1
     
+    
 class main_category(models.Model):
     name=models.CharField(max_length=50)
     

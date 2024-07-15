@@ -63,7 +63,7 @@ def add_to_cart(request,id):
     if aid:
 
         messages.info(request,"Product Is Already Exists")
-        return redirect ('shop')
+        return redirect('shop')
 
     else:
         addcart.objects.create(user=uid,
@@ -251,88 +251,6 @@ def checkout(request):
         return render(request,"checkout.html",contaxt)
 
 
-# def order1(request):
-#     uid=User.objects.get(email=request.session['email'])
-#     prod=addcart.objects.filter(user=uid).order_by('id')
-#     pro=addcart.objects.filter(user=uid)
-
-#     ord=Order.objects.filter(user_id=uid)
-#     price(ord)
-#     aid=addcart.objects.filter(user=uid)
-    
-    
-    
-    
-    
-#     if request.POST:
-#         f_name=request.POST['f_name']
-#         l_name=request.POST['l_name']
-#         company_name=request.POST['company_name']
-#         address=request.POST['address']
-#         city=request.POST['city']
-#         country=request.POST['country']
-#         zip_code=request.POST['zip_code']
-#         mobile=request.POST['mobile']
-#         email=request.POST['email']
-
-            
-#         billing_address.objects.create(user=uid,
-#                                        f_name=f_name,
-#                                        l_name=l_name,
-#                                        company_name=company_name,
-#                                        address=address,
-#                                        city=city,
-#                                        country=country,
-#                                        zip_code=zip_code,
-#                                        mobile=mobile,
-#                                        email=email,)
-
-#     total=0
-#     l1=[]
-    
-#     for i in aid:
-#         a=i.t_price
-#         l1.append(a)
-#         total=sum(l1)
-
-#     sub_total2 = sum([i.t_price for i in pro])
-#     total2 = sub_total2 + 50
-
-#     sub_total = sum([i.t_price for i in pro])
-#     total = sub_total + 50
- 
-#     discount_amount = 0
-
-#     total = sub_total + 50
-#     main_total = total - discount_amount    
-    
-#     amount = total * 100
-#     if amount < 100:
-#         amount = 100
-
-
-#     client = razorpay.Client(auth=('rzp_test_bilBagOBVTi4lE','77yKq3N9Wul97JVQcjtIVB5z'))
-#     response = client.order.create({'amount': amount, 'currency': 'INR', 'payment_capture': 0})
-#     order_id = response['id']
-#     print(order_id)
-    
-    
-    
-    
-#     for i in pro:
-#         t_price=0
-#         Order.objects.create(user=uid,img=i.img,product_name=i.name,price=i.price,
-#                              qtn=i.quantity,product_total=i.price*i.quantity,t_price=t_price)
-#         i.delete()
- 
-#     con={'uid':uid,
-#          'prod':prod,
-#          'pro':pro,
-#          'ord':ord,
-#          }    
-                                                
-#     return render(request,"order.html",con)
-
 
 
 def billing_view(request):
@@ -464,6 +382,7 @@ def shop_detail1(request,id):
     w_count=Add_Whishlist.objects.filter(user_id=uid).count()
 
     
+    
     contaxt={'pp':pp,
             'mid':mid,
             'cat':cat,
@@ -512,10 +431,10 @@ def shop(request):
         else:
             pp=product.objects.all().order_by("-id")
         
-        paginator=Paginator(pp,9)  
-        page_number=request.GET.get("page")  
+        paginator=Paginator(pp,3)  
+        page_number=request.GET.get("page",1)  
         pp=paginator.get_page(page_number)
-
+        show_page=paginator.get_elided_page_range(page_number,on_each_side=1,on_ends=1)
         con={'pp':pp,
             'mid':mid,
             'cat':cat,
@@ -524,7 +443,7 @@ def shop(request):
             'count':count,
             'count':count,
             "w_count":w_count,
-            "whishlist_product":whishlist_product,"l1":l1}
+            "whishlist_product":whishlist_product,"l1":l1,"show_page":show_page}
         return render(request,"shop.html",con)
     else:
         return render(request,"login.html")
@@ -620,7 +539,7 @@ def logout(request):
             
 #             return render(request,"login.html")
 #     except:
-       
+        
 #         return render(request,"login.html")
 
 
@@ -881,7 +800,7 @@ def add_whishlist(request, id):
         
     return redirect("shop")
 
-
+    
 
 def remove_whishlist(request, id):
     
