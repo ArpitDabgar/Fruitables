@@ -507,73 +507,50 @@ def logout(request):
     else:
         return render(request,'login.html')
 
-# def login(request):
-#     if 'email' in request.session:
-       
-#         uid = User.objects.get(email=request.session['email'])
-       
-       
-#         return render(request, "index.html")
-#     try:
-#         if request.POST:
-#             email=request.POST['email']
-#             password=request.POST['password']
-#             uid=User.objects.get(email=email)
-#             if uid.email==email:
-#                 request.session['email']=uid.email
-#                 if uid.password==password:
-#                     return render(request,"index.html")
-                                        
-#                 else:
-#                     con={
-#                         'emsg': "Invalid Password",
-#                     }
-#                     return render(request,"login.html",con)
-#             else:
-#                 con={           
-#                 'e_msg': "Enter Valid Email ID",
-#                     }
-
-
-#                 return render(request,"login.html",con)
-#         else:
-            
-#             return render(request,"login.html")
-#     except:
-        
-#         return render(request,"login.html")
 
 
 
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.......
+
+
 def login(request):
     if 'email' in request.session:
-     
+       
         uid = User.objects.get(email=request.session['email'])
-    
-      
 
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
 
-        try:
-            uid = User.objects.get(email=email)
-        except User.DoesNotExist:
-            context = {'e_msg': "Enter Valid Email ID"}
-            return render(request, "login.html", context)
+        return render(request, "index.html")
+    try:
+        if request.POST:
+            email=request.POST['email']
+            password=request.POST['password']
+            uid=User.objects.get(email=email)
+            if uid.email==email:
+                request.session['email']=uid.email
+                if uid.password==password:
+                    return render(request,"index.html")
+                                        
+                else:
+                    con={
+                        'emsg': "Invalid Password",
+                    }
+                    return render(request,"login.html",con)
+            else:
+                con={           
+                'e_msg': "Enter Valid Email ID",
+                    }
 
-        if uid.password == password:  # Direct password comparison
-            request.session['email'] = uid.email
-            return render(request, "index.html")
+
+                return render(request,"login.html",con)
         else:
-            context = {'emsg': "Invalid Password"}
-            return render(request, "login.html", context)
-    else:
-        return render(request, "login.html")
+                
+            return render(request,"login.html")
+    except:
+        
+        return render(request,"login.html")
 
 
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+ 
+
 
 
 # def login(request):
