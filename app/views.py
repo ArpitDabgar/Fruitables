@@ -8,18 +8,22 @@ from django.template.loader import render_to_string
 from django.core.paginator import Paginator
 import razorpay
 
-
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def index(request):
-    
-    uid=User.objects.get(email=request.session['email'])
-    w_count=Add_Whishlist.objects.filter(user_id=uid).count()
-    
-    count=addcart.objects.filter(user=uid).count()
-    pp=product.objects.all().order_by("-id")
-    con={'count':count,"pp":pp,"w_count":w_count}
-    return render(request,"index.html",con)
+    if 'email' in request.session:
+        
+        uid=User.objects.get(email=request.session['email'])
+        w_count=Add_Whishlist.objects.filter(user_id=uid).count()
+        
+        count=addcart.objects.filter(user=uid).count()
+        pp=product.objects.all().order_by("-id")
+        con={'count':count,"pp":pp,"w_count":w_count}
+        return render(request,"index.html",con)
+    else:
+        return render(request,"login.html")
+        
 
 
 def cart(request):
@@ -504,15 +508,12 @@ def logout(request):
         return render(request,'login.html')
 
 # def login(request):
-    
 #     if 'email' in request.session:
        
 #         uid = User.objects.get(email=request.session['email'])
-#         count = addcart.objects.filter(user=uid).count()
-#         context = {
-#             'count': count,
-#         }
-#         return render(request, "index.html", context)
+       
+       
+#         return render(request, "index.html")
 #     try:
 #         if request.POST:
 #             email=request.POST['email']
@@ -544,35 +545,65 @@ def logout(request):
 
 
 
-
-
-
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.......
 def login(request):
     if 'email' in request.session:
+     
         uid = User.objects.get(email=request.session['email'])
-        count = addcart.objects.filter(user=uid).count()
-        context = {
-            'count': count,
-        }
-        return render(request, "index.html", context)
+    
+      
 
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
 
         try:
-            user = User.objects.get(email=email)
-            if user.password == password:
-                request.session['email'] = user.email
-                return render(request, "index.html")
-            else:
-                context = {'emsg': "Invalid Password"}
-                return render(request, "login.html", context)
+            uid = User.objects.get(email=email)
         except User.DoesNotExist:
-            context = {'e_msg': "Invalid Email ID"}
+            context = {'e_msg': "Enter Valid Email ID"}
             return render(request, "login.html", context)
 
-    return render(request, "login.html")
+        if uid.password == password:  # Direct password comparison
+            request.session['email'] = uid.email
+            return render(request, "index.html")
+        else:
+            context = {'emsg': "Invalid Password"}
+            return render(request, "login.html", context)
+    else:
+        return render(request, "login.html")
+
+
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+# def login(request):
+#     if request.user.is_authenticated:
+#         # User is logged in via Google
+#         email = request.user.email
+#         context = {
+          
+#             'email': email
+#         }
+#         return render(request, "index.html", context)
+#     else:
+
+#         if request.method == 'POST':
+#             email = request.POST.get('email')
+#             password = request.POST.get('password')
+
+#             try:
+#                 user = User.objects.get(email=email)
+#                 if user.password == password:
+#                     request.session['email'] = user.email
+#                     return render(request, "index.html")
+#                 else:
+#                     context = {'emsg': "Invalid Password"}
+#                     return render(request, "login.html", context)
+#             except User.DoesNotExist:
+#                 context = {'e_msg': "Invalid Email ID"}
+#                 return render(request, "login.html", context)
+
+#         return render(request, "login.html")
 
 
 
@@ -615,7 +646,7 @@ def login(request):
 #             print("User not found")
 #             context = {
 #                 "email": email,
-#                 'emsg': "User not found",}
+#                 'emsg': "User not found"}
 #             return render(request, "confirm_password.html", context)
 #     return render(request, "confirm_password.html")
  
@@ -652,7 +683,6 @@ def confirm_password(request):
     return render(request,"confirm_password.html")     
 
 #===============================================================    
-
 
 
 
@@ -701,6 +731,24 @@ def forget(request):
 #     else:
 #         return render(request,"register.html")
     
+    
+"""
+ 
+import requests
+
+response = requests.get("https://emailvalidation.abstractapi.com/v1/?api_key=6089bc4afeb248cfbae263ac6dd99ef8&email=jadavmital8487@gmail.com")
+if response.status_code == 200:
+    data = response.json()
+    if data["deliverability"] == "DELIVERABLE":
+        print("yes")
+    else:
+        print("no")
+else:
+    print("Failed to validate email")
+
+ """   
+import requests
+    
 def register(request):
 
     if request.POST:
@@ -708,20 +756,30 @@ def register(request):
         email=request.POST['email']
         password=request.POST['password']
         c_password=request.POST['c_password']
-        
+        response = requests.get(f"https://emailvalidation.abstractapi.com/v1/?api_key=6089bc4afeb248cfbae263ac6dd99ef8&email={email}")
+
         try:
             uid=User.objects.get(email=email)
             if uid.email==email:
                 con={"e_msg":"This Email ID is Already Login Add Another Email"}
                 return render(request,"register.html",con)
         except:
-            if password==c_password:
-                User.objects.create(name=name,email=email,password=password)
-                
-                return render(request,"login.html")
+            if response.status_code == 200:
+                data = response.json()
+                if data["deliverability"] == "DELIVERABLE":
+                    if password==c_password:
+                        User.objects.create(name=name,email=email,password=password)
+                        
+                        return render(request,"login.html")
+                    else:
+                        con={'e_msg': "Passwords do not match",}
+                        return render(request,"register.html",con)
+                else:
+                    con={'e_msg': "This Email is Not Found in server",}
+                    return render(request,"register.html",con)
             else:
-                con={'e_msg': "Passwords do not match",}
-                return render(request,"register.html",con)
+                print("Failed to validate email")
+           
             
     else:
         return render(request,"register.html")    

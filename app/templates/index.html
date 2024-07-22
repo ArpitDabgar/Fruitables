@@ -109,8 +109,13 @@
                         </a>
 
                         <a href="{% url 'logout' %}" class="my-auto" style="margin-left: 12px;">Logout
-                            <!-- <i class="fas fa-user fa-2x"></i> -->
+                            <i class="fas fa-user fa-2x"></i>
                         </a>
+<!-- 
+                        {% if user.is_authenticated %}
+                     
+                        <a href="{% url 'logout' %}">Logout</a>
+                        {% endif %} -->
                     </div>
                 </div>
             </nav>
@@ -1317,6 +1322,16 @@
         let Top = () => {
             window.scrollTo(0)
         }
+    </script>
+
+    <script>
+        // Function to redirect to the login page
+        function redirectToLogin() {
+            window.location.href = "{% url 'login' %}";
+        }
+
+        // Set a timeout to redirect to the login page after 10 seconds
+        setTimeout(redirectToLogin, 10000); // 10000 milliseconds = 10 seconds
     </script>
 </body>
 

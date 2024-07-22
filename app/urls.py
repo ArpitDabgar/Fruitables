@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from .import views
+from django.contrib.auth import views as auth_views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('index', views.index, name='index'),
@@ -51,5 +53,5 @@ urlpatterns = [
     path("add_whishlist/<int:id>",views.add_whishlist,name="add_whishlist"),
     path("remove_whishlist/<int:id>",views.remove_whishlist,name="remove_whishlist"),   
     path('search', views.search, name='search'),
-    
+    # path('', views.login, name='index'),
 ]
