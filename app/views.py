@@ -509,9 +509,6 @@ def logout(request):
 
 
 
-
-
-
 def login(request):
     if 'email' in request.session:
        
@@ -542,7 +539,7 @@ def login(request):
 
                 return render(request,"login.html",con)
         else:
-                
+
             return render(request,"login.html")
     except:
         
