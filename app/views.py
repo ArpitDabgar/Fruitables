@@ -1,84 +1,102 @@
 # from django.conf import settings
-from django.shortcuts import render,redirect,HttpResponseRedirect,HttpResponse 
+from django.shortcuts import render,redirect,HttpResponseRedirect,HttpResponse  # type: ignore
 from .models import*
-from django.core.mail import send_mail
+from django.core.mail import send_mail # type: ignore
 import random
-from django.contrib import messages
-from django.template.loader import render_to_string
-from django.core.paginator import Paginator
-import razorpay
+from django.contrib import messages # type: ignore
+from django.template.loader import render_to_string # type: ignore
+from django.core.paginator import Paginator # type: ignore
+import razorpay # type: ignore
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required # type: ignore
+from django.views.decorators.cache import never_cache # type: ignore # type: ignore
+
+
+from django.contrib.auth.models import User # type: ignore
+from django.shortcuts import render, redirect # type: ignore
+from .models import User
+from django.contrib.auth.hashers import check_password # type: ignore
 
 # Create your views here.
+@never_cache
 def index(request):
     if 'email' in request.session:
-        
         uid=User.objects.get(email=request.session['email'])
         w_count=Add_Whishlist.objects.filter(user_id=uid).count()
         
         count=addcart.objects.filter(user=uid).count()
         pp=product.objects.all().order_by("-id")
-        con={'count':count,"pp":pp,"w_count":w_count}
+        con={"pp":pp,"count":count,"w_count":w_count}
         return render(request,"index.html",con)
+    
     else:
         return render(request,"login.html")
-        
 
 
 def cart(request):
-    uid = User.objects.get(email=request.session['email'])
-    count = addcart.objects.filter(user=uid).count()
-    w_count=Add_Whishlist.objects.filter(user_id=uid).count()
-    
-    mid = main_category.objects.all()
-    ct = addcart.objects.filter(user=uid)
-
-    print(ct)
-
-    sub_total = 0
-    charge = 50
-    l1 = []
-    t_price = 0  
-
-    for i in ct:
-        a = i.t_price
-        l1.append(a)
-        sub_total = sum(l1)
-        t_price = sub_total + charge
-
-    contaxt = {'mid': mid,
-               'ct': ct,
-               'sub_total': sub_total,
-               'charge': charge,
-               't_price': t_price,
-               'count': count,
-               "w_count":w_count}
-
-    return render(request, "cart.html", contaxt)
-
-
-
-def add_to_cart(request,id):
-    uid=User.objects.get(email=request.session['email'])
-    pid=product.objects.get(id=id)
-    aid=addcart.objects.filter(products=pid,user=uid).exists()
+    if 'email' in request.session:
+        uid = User.objects.get(email=request.session['email'])
+        count = addcart.objects.filter(user=uid).count()
+        w_count=Add_Whishlist.objects.filter(user_id=uid).count()
         
-    if aid:
+        mid = main_category.objects.all()
+        ct = addcart.objects.filter(user=uid)
 
-        messages.info(request,"Product Is Already Exists")
-        return redirect('shop')
+        print(ct)
 
+        sub_total = 0
+        charge = 50
+        l1 = []
+        t_price = 0  
+
+        for i in ct:
+            a = i.t_price
+            l1.append(a)
+            sub_total = sum(l1)
+            t_price = sub_total + charge
+
+        contaxt = {'mid': mid,
+                'ct': ct,
+                'sub_total': sub_total,
+                'charge': charge,
+                't_price': t_price,
+                'count': count,
+                "w_count":w_count}
+
+        return render(request, "cart.html", contaxt)
     else:
-        addcart.objects.create(user=uid,
-                            products=pid,
-                            price=pid.price,
-                            name=pid.name,
-                            quantity=1,  
-                            img=pid.img,
-                            t_price=pid.price)
+        return render(request,"login.html")
 
-    return redirect ('cart')
+
+
+
+def add_to_cart(request, id):
+    if 'email' in request.session:
+        uid = User.objects.get(email=request.session['email'])
+        pid = product.objects.get(id=id)
+        aid = addcart.objects.filter(products=pid, user=uid).exists()
+
+        if aid:
+            messages.info(request, "Product Is Already Exists")
+        else:
+            addcart.objects.create(
+                user=uid,
+                products=pid,
+                price=pid.price,
+                name=pid.name,
+                quantity=1,
+                img=pid.img,
+                t_price=pid.price
+            )
+            messages.success(request, "Product added to cart successfully.")
+
+        # ✅ Redirect to the page where the user came from
+        next_url = request.GET.get('next', 'cart')
+        return redirect(next_url)
+    else:
+        return render(request,"login.html")        
+
+
 
 
 def shop_add_to_card(request,id):
@@ -116,7 +134,6 @@ def cart_mines(request,id):
          
         return redirect("cart")
 
-
 def delete1(request,id):
     dell=addcart.objects.filter(id=id)
     dell.delete()
@@ -127,179 +144,124 @@ def order_delete(request,id):
     dell.delete()
     return redirect("order1")
 
-# def checkout(request):
-#     uid=User.objects.get(email=request.session['email'])
-#     count=addcart.objects.filter(user=uid).count()
-#     pro=addcart.objects.filter(user=uid)
-
-#     list1=[]
-#     sub_total=0
-#     t_price = 1
-#     charge=0
-#     for i in pro:
-#         m = i.price*i.quantity
-#         list1.append(m)
-#         sub_total =sum(list1)
-#         charge=50
-#         t_price = sub_total  + charge
-    
-#     if request.POST:
-#         f_name=request.POST['f_name']
-#         l_name=request.POST['l_name']
-#         company_name=request.POST['company_name']
-#         address=request.POST['address']
-#         city=request.POST['city']
-#         country=request.POST['country']
-#         zip_code=request.POST['zip_code']
-#         mobile=request.POST['mobile']
-#         email=request.POST['email']
-        
-        
-#         billing_address.objects.create(user=uid,
-#                                        f_name=f_name,
-#                                        l_name=l_name,
-#                                        company_name=company_name,
-#                                        address=address,
-#                                        city=city,
-#                                        country=country,
-#                                        zip_code=zip_code,
-#                                        mobile=mobile,
-#                                        email=email,)
-
-
-#     amount = t_price*100 #100 here means 1 dollar,1 rupree if currency INR
-#     client = razorpay.Client(auth=('rzp_test_uqhoYnBzHjbvGF','jEhBs6Qp9hMeGfq5FyU45cVi'))
-#     response = client.order.create({'amount':amount,'currency':'INR','payment_capture':1})
-#     print(response,"**********")      
-        
-#     contaxt={
-
-
-#     'uid':uid,
-#     'count':count,
-#     'pro':pro,
-#     't_price':t_price,
-#     'sub_total':sub_total,
-#     'charge':charge,
-#     'response':response,
-
-
-# }
-#     return render(request,"checkout.html",contaxt)
-import razorpay
+import razorpay # type: ignore
 def checkout(request):
-
-    uid=User.objects.get(email=request.session['email'])
-    aid=addcart.objects.filter(user=uid)
-    count=addcart.objects.filter(user=uid).count()
-    w_count=Add_Whishlist.objects.filter(user_id=uid).count()
-    
-    l1=[]
-    sub_total=0
-    charge=50
-    dis=0
-    t_price = 0
-    for i in aid:
-        l1.append(i.t_price)
-        sub_total=sum(l1)
-        print(sub_total)
-        discount=0
-        dis=None
-        t_price=sub_total+charge
+    if 'email' in request.session:
+        uid=User.objects.get(email=request.session['email'])
+        aid=addcart.objects.filter(user=uid)
+        count=addcart.objects.filter(user=uid).count()
+        w_count=Add_Whishlist.objects.filter(user_id=uid).count()
         
-        if sub_total==0:
-            charge=0
-            t_price=0
-        else:
-            charge=50
-        if "discount" in request.session:
-            dis=request.session.get('discount')
-            t_price=sub_total+charge-dis
-            print(dis)
-        else:
-            dis=0
+        l1=[]
+        sub_total=0
+        charge=50
+        dis=0
+        t_price = 0
+        for i in aid:
+            l1.append(i.t_price)
+            sub_total=sum(l1)
+            print(sub_total)
+            discount=0
+            dis=None
             t_price=sub_total+charge
-        if t_price==0:
-            con={"aid":aid,
-                 "sub_total":sub_total,
-                 "charge":charge,
-                 "t_price":t_price,
-                 "uid":uid,
-                 "discount":dis,
-                 'count':count,
-                 "w_count":w_count}
-            return render(request,"checkout.html",con)
+            
+            if sub_total==0:
+                charge=0
+                t_price=0
+            else:
+                charge=50
+            if "discount" in request.session:
+                dis=request.session.get('discount')
+                t_price=sub_total+charge-dis
+                print(dis)
+            else:
+                dis=0
+                t_price=sub_total+charge
+            if t_price==0:
+                con={"aid":aid,
+                    "sub_total":sub_total,
+                    "charge":charge,
+                    "t_price":t_price,
+                    "uid":uid,
+                    "discount":dis,
+                    'count':count,
+                    "w_count":w_count}
+                return render(request,"checkout.html",con)
+        else:
+            amount = max(t_price, 1) * 100
+            client = razorpay.Client(auth=('rzp_test_bilBagOBVTi4lE','77yKq3N9Wul97JVQcjtIVB5z'))
+            response = client.order.create({'amount': amount, 'currency': 'INR', 'payment_capture': 1})
+                
+            print(response,"**************")
+            contaxt={
+                "aid":aid,
+                "sub_total":sub_total,
+                "charge":charge,
+                "t_price":t_price,
+                "uid":uid,
+                "response":response,
+                "discount":dis,
+                'count':count,
+            }
+            return render(request,"checkout.html",contaxt)
     else:
-        # Now, t_price is guaranteed to be defined
-        # amount = t_price*100 #100 here means 1 dollar,1 rupree if currency INR
-        # client = razorpay.Client(auth=('rzp_test_bilBagOBVTi4lE','77yKq3N9Wul97JVQcjtIVB5z'))
-        # response = client.order.create({'amount':amount,'currency':'INR','payment_capture':1})
+        return render(request,"login.html")        
 
-            
-        
-        amount = max(t_price, 1) * 100
-        client = razorpay.Client(auth=('rzp_test_bilBagOBVTi4lE','77yKq3N9Wul97JVQcjtIVB5z'))
-        response = client.order.create({'amount': amount, 'currency': 'INR', 'payment_capture': 1})
-            
-        print(response,"**************")
-        contaxt={
-            "aid":aid,
-            "sub_total":sub_total,
-            "charge":charge,
-            "t_price":t_price,
-            "uid":uid,
-            "response":response,
-            "discount":dis,
-            'count':count,
-        }
-        return render(request,"checkout.html",contaxt)
 
 
 
 
 def billing_view(request):
-    uid=User.objects.get(email=request.session['email'])
-    aid=addcart.objects.filter(user=uid)
-    a_count=addcart.objects.filter(user=uid).count()
-    w_count=Add_Whishlist.objects.filter(user_id=uid).count()
+    if 'email' in request.session:
+        uid=User.objects.get(email=request.session['email'])
+        aid=addcart.objects.filter(user=uid)
+        a_count=addcart.objects.filter(user=uid).count()
+        w_count=Add_Whishlist.objects.filter(user_id=uid).count()
+                
+        count=addcart.objects.filter(user=uid).count()
+        if 'discount' in request.session:
+            del request.session['discount']
+        
+        for i in aid:
+            Order.objects.create(user=uid,
+                                product_name=i.name,
+                                img=i.img,
+                                price=i.price,
+                                qtn=i.quantity,
+                                t_price=i.t_price)
+            i.delete()
+        if request.POST:
+            f_name=request.POST['f_name']
+            l_name=request.POST['l_name']
+            company_name=request.POST['company_name']
             
-    count=addcart.objects.filter(user=uid).count()
-    if 'discount' in request.session:
-        del request.session['discount']
+            country=request.POST['country']
+            address=request.POST['address']
+            city=request.POST['city']
 
-    for i in aid:
-        Order.objects.create(user=uid,
-                             product_name=i.name,
-                             img=i.img,
-                             price=i.price,
-                             qtn=i.quantity,
-                             t_price=i.t_price)
-        i.delete()
-    if request.POST:
-        f_name=request.POST['f_name']
-        l_name=request.POST['l_name']
-        company_name=request.POST['company_name']
+            zip_code=request.POST['zip_code']
+            mobile=request.POST['mobile']
         
-        country=request.POST['country']
-        address=request.POST['address']
-        city=request.POST['city']
-
-        zip_code=request.POST['zip_code']
-        mobile=request.POST['mobile']
-
-        
-        billing_address.objects.create(user=uid,f_name=f_name,l_name=l_name,company_name=company_name,country=country,address=address,city=city,zip_code=zip_code,mobile=mobile,email=uid.email)
-        con={'count':count,"w_count":w_count}
-        return render(request,"order.html",con)
+            
+            billing_address.objects.create(user=uid,f_name=f_name,l_name=l_name,company_name=company_name,country=country,address=address,city=city,zip_code=zip_code,mobile=mobile,email=uid.email)
+            con={'count':count,"w_count":w_count}
+            return render(request,"order.html",con)
+        else:
+            con={'count':count}
+            return render(request,"checkout.html",con)
     else:
-        con={'count':count}
-        return render(request,"checkout.html",con)
+        return render(request,"login.html")        
+
 
 def show_orders(request):
-    uid=User.objects.get(email=request.session['email'])
-    ord=Order.objects.filter(user_id=uid)
-    
-    return render(request,"order.html")
+    if 'email' in request.session:
+        uid=User.objects.get(email=request.session['email'])
+        ord1=Order.objects.filter(user_id=uid)
+        con={"ord1":ord1}
+        return render(request,"order.html",con)
+    else:
+        return render(request,"login.html")        
+
 
 
 def apply_coupon(request):
@@ -406,7 +368,7 @@ def shop(request):
         l1=[]
         for i in whishlist_product:
             l1.append(i.product_id.id)
-    
+        
         mid=main_category.objects.all()
         cid=request.GET.get("cid")
         
@@ -453,13 +415,14 @@ def shop(request):
         return render(request,"login.html")
 
 
+
 def filter_price(request):
     if request.POST:
         max1=request.POST['max1']
         print(max1)
         pp=product.objects.filter(price__lte=max1) 
         print(pp)
-        contaxt={
+        contaxt={                         
             "pp":pp,
             "max1":max1,
         
@@ -500,129 +463,36 @@ def testimonial(request):
 
 
 def logout(request):
-    
-    if 'email' in request.session:
+     
         del request.session['email']
-        return render(request,'login.html')
-    else:
-        return render(request,'login.html')
+        return redirect("login")
+
+
+
 
 
 
 def login(request):
     if 'email' in request.session:
-       
-        uid = User.objects.get(email=request.session['email'])
+        return redirect("index")  # already logged in
 
+    if request.method == "POST":
+        email = request.POST.get('email')
+        password = request.POST.get('password')
 
-        return render(request, "index.html")
-    try:
-        if request.POST:
-            email=request.POST['email']
-            password=request.POST['password']
-            uid=User.objects.get(email=email)
-            if uid.email==email:
-                request.session['email']=uid.email
-                if uid.password==password:
-                    return render(request,"index.html")
-                                        
-                else:
-                    con={
-                        'emsg': "Invalid Password",
-                    }
-                    return render(request,"login.html",con)
+        try:
+            user = User.objects.get(email=email)
+
+            if user.password==password:  # ✅ check hashed password
+                request.session['email'] = user.email
+                return redirect("index")
             else:
-                con={           
-                'e_msg': "Enter Valid Email ID",
-                    }
+                return render(request, "login.html", {"e_msg": "Invalid password."})
+        except User.DoesNotExist:
+            return render(request, "login.html", {"e_msg": "Invalid email."})
+    
+    return render(request, "login.html")
 
-
-                return render(request,"login.html",con)
-        else:
-
-            return render(request,"login.html")
-    except:
-        
-        return render(request,"login.html")
-
-
- 
-
-
-
-# def login(request):
-#     if request.user.is_authenticated:
-#         # User is logged in via Google
-#         email = request.user.email
-#         context = {
-          
-#             'email': email
-#         }
-#         return render(request, "index.html", context)
-#     else:
-
-#         if request.method == 'POST':
-#             email = request.POST.get('email')
-#             password = request.POST.get('password')
-
-#             try:
-#                 user = User.objects.get(email=email)
-#                 if user.password == password:
-#                     request.session['email'] = user.email
-#                     return render(request, "index.html")
-#                 else:
-#                     context = {'emsg': "Invalid Password"}
-#                     return render(request, "login.html", context)
-#             except User.DoesNotExist:
-#                 context = {'e_msg': "Invalid Email ID"}
-#                 return render(request, "login.html", context)
-
-#         return render(request, "login.html")
-
-
-
-
-
-
-# def confirm_password(request):
-#     if request.method == 'POST':
-#         email = request.POST.get('email')
-#         otp = request.POST.get('otp')
-#         new_password = request.POST.get('new_password')
-#         confirm_password = request.POST.get('confirm_password')
-#         print(email, otp)
-#         try:
-#             uid = User.objects.get(email=email)
-#             if str(uid.otp) == otp:
-#                 print(otp)
-#                 if new_password == confirm_password:
-#                     uid.password = new_password
-#                     uid.save()
-#                     print("Password Successfully Changed")
-#                     context = {
-#                         'email': email,
-#                         'uid': uid,
-#                         'emsg': 'Login Password Changed Successfully'}
-#                     return render(request, "index.html", context)
-#                 else:
-#                     print("Passwords do not match")
-#                     context = {
-#                         "email": email,
-#                         'emsg': "Passwords do not match",}
-#                     return render(request, "confirm_password.html", context)
-#             else:
-#                 print("Invalid OTP")
-#                 context = {
-#                     "email": email,
-#                     'emsg': "Invalid OTP"}
-#                 return render(request, "confirm_password.html", context)
-#         except:
-#             print("User not found")
-#             context = {
-#                 "email": email,
-#                 'emsg': "User not found"}
-#             return render(request, "confirm_password.html", context)
-#     return render(request, "confirm_password.html")
  
 def confirm_password(request):
     if request.POST:
@@ -637,7 +507,7 @@ def confirm_password(request):
             if str(uid.otp)==otp:
                 print(otp)
                 if new_password==confirm_password:
-                   uid.password==new_password
+                   uid.password=new_password
                    uid.save()
                    con={'email':email,'uid':uid,'emsg':'password change successfully'}
                    return render(request,"login.html",con)
@@ -659,159 +529,165 @@ def confirm_password(request):
 #===============================================================    
 
 
+from django.shortcuts import render, redirect # type: ignore
+from django.core.mail import send_mail # type: ignore
+from django.contrib.auth.models import User # type: ignore
+from django.conf import settings # type: ignore
+import random
+from django.contrib.auth.models import User # type: ignore
+
+
+# For demo only. In production, use a persistent store like DB or Redis
+otp_storage = {}
 
 def forget(request):
-    if request.POST:
-        email=request.POST['email']
-        otp=random.randint(1000,9999)
-        try:
-            uid=User.objects.get(email=email)
-        
-            uid.otp=otp
-            uid.save()
-            send_mail("django",f"your otp is - {otp}",'gohiljayb10@gmail.com',[email])
-            contaxt={
-                "email":email
-            }
-            return render(request,"confirm_password.html",contaxt)
-        except:
-            print("Invalid Email")       
-            return render(request,"forget.html")    
-    return render(request,"forget.html")
+    if request.method == "POST":
+        email = request.POST.get("email")
+        otp = request.POST.get("otp")
+        new_password = request.POST.get("new_password")
+        confirm_password = request.POST.get("confirm_password")
 
+        # Step 1: User enters email ➝ send OTP
+        if email and not otp:
+            try:
+                user = User.objects.get(email=email)
+                generated_otp = str(random.randint(100000, 999999))
+                otp_storage[email] = generated_otp
 
+                send_mail(
+                    'Your OTP for password reset',
+                    f'Your OTP is: {generated_otp}',
+                    settings.EMAIL_HOST_USER,
+                    [email],
+                    fail_silently=False,
+                )
+
+                return render(request, "forget.html", {
+                    "msg": "OTP sent to your email.",
+                    "email_entered": True,
+                    "email": email
+                })
+
+            except User.DoesNotExist:
+                return render(request, "forget.html", {
+                    "msg": "Email not registered."
+                })
+
+        # Step 2: OTP + Password reset
+        elif email and otp and new_password and confirm_password:
+            stored_otp = otp_storage.get(email)
+
+            if stored_otp and otp == stored_otp:
+                if new_password == confirm_password:
+                    try:
+                        user = User.objects.get(email=email)
+                        user.set_password(new_password)  # Securely set password
+                        user.save()
+                        otp_storage.pop(email, None)  # Clean up OTP
+                        return redirect("login")  # Replace with your login URL name
+                    except User.DoesNotExist:
+                        return render(request, "forget.html", {
+                            "msg": "User not found."
+                        })
+                else:
+                    return render(request, "forget.html", {
+                        "msg": "Passwords do not match.",
+                        "email_entered": True,
+                        "email": email
+                    })
+            else:
+                return render(request, "forget.html", {
+                    "msg": "Invalid OTP.",
+                    "email_entered": True,
+                    "email": email
+                })
+
+    return render(request, "forget.html")
 
         
 #===============================================================
-# def register(request):
-#     if request.POST:
-#         name=request.POST['name']
-#         email=request.POST['email']
-#         password=request.POST['password']
-#         c_password=request.POST['c_password']
-            
-#         try:
-#             uid=User.objects.get(email=email)
-#             if uid.email==email:
-#                 con={"e_msg":"This Email ID is Already Login Add Another Email"}
-#                 return render(request,"register.html",con)
-#         except:
-#             if password==c_password:
-#                 User.objects.create(name=name,email=email,password=password)
-#                 return render(request,"login.html")
-#             else:
-#                 return render(request,"register.html")
-            
-#     else:
-#         return render(request,"register.html")
-    
-    
-"""
- 
-import requests
 
-response = requests.get("https://emailvalidation.abstractapi.com/v1/?api_key=6089bc4afeb248cfbae263ac6dd99ef8&email=jadavmital8487@gmail.com")
-if response.status_code == 200:
-    data = response.json()
-    if data["deliverability"] == "DELIVERABLE":
-        print("yes")
-    else:
-        print("no")
-else:
-    print("Failed to validate email")
 
- """   
-import requests
-    
+from django.shortcuts import render, redirect # type: ignore
+from .models import User
+import requests # type: ignore
+from django.contrib.auth.hashers import make_password # type: ignore
+
 def register(request):
+    if request.method == "POST":
+        name = request.POST['name']
+        email = request.POST['email']
+        password = request.POST['password']
+        c_password = request.POST['c_password']
+        
+        if User.objects.filter(email=email).exists():
+            return render(request, "register.html", {"e_msg": "Email already exists."})
 
-    if request.POST:
-        name=request.POST['name']
-        email=request.POST['email']
-        password=request.POST['password']
-        c_password=request.POST['c_password']
-        response = requests.get(f"https://emailvalidation.abstractapi.com/v1/?api_key=6089bc4afeb248cfbae263ac6dd99ef8&email={email}")
+        if password != c_password:
+            return render(request, "register.html", {"e_msg": "Passwords do not match."})
+        
+        else:
+            User.objects.create(name=name, email=email, password=password)
+            return redirect("login")
 
-        try:
-            uid=User.objects.get(email=email)
-            if uid.email==email:
-                con={"e_msg":"This Email ID is Already Login Add Another Email"}
-                return render(request,"register.html",con)
-        except:
-            if response.status_code == 200:
-                data = response.json()
-                if data["deliverability"] == "DELIVERABLE":
-                    if password==c_password:
-                        User.objects.create(name=name,email=email,password=password)
-                        
-                        return render(request,"login.html")
-                    else:
-                        con={'e_msg': "Passwords do not match",}
-                        return render(request,"register.html",con)
-                else:
-                    con={'e_msg': "This Email is Not Found in server",}
-                    return render(request,"register.html",con)
-            else:
-                print("Failed to validate email")
-           
-            
-    else:
-        return render(request,"register.html")    
+        # if User.objects.filter(email=email).exists():
+        #     return render(request, "register.html", {"e_msg": "Email already exists."})
+
+        # if password != c_password:
+        #     return render(request, "register.html", {"e_msg": "Passwords do not match."})
+
+        # try:
+        #     res = requests.get(
+        #         "https://emailvalidation.abstractapi.com/v1/",
+        #         params={"api_key": "6089bc4afeb248cfbae263ac6dd99ef8", "email": email}
+        #     )
+        #     print(res)
+        #     if res.status_code == 200:
+        #         User.objects.create(name=name, email=email, password=make_password(password))
+        #         return redirect("login")
+        # except:
+        #     pass
+
+        # return render(request, "register.html", {"e_msg": "Invalid or undeliverable email."})
+
+    return render(request, "register.html")
+
+
+
+   
 
 def contact(request):
-    uid = User.objects.get(email=request.session['email'])
-    count=addcart.objects.filter(user=uid).count()
-    w_count=Add_Whishlist.objects.filter(user_id=uid).count()
-    
-    if request.POST:
-        name=request.POST['name']
-                
-        email=request.POST['email']  
-              
-        message=request.POST['message']  
+    if 'email' in request.session:
+        uid = User.objects.get(email=request.session['email'])
+        count=addcart.objects.filter(user=uid).count()
+        w_count=Add_Whishlist.objects.filter(user_id=uid).count()
         
-        Contact.objects.create(name=name,email=email,message=message) 
-    con={"count":count,
-         "uid":uid,"w_count":w_count}
-    return render(request,"contact.html",con)        
-
+        if request.POST:
+            name=request.POST['name']
+                    
+            email=request.POST['email']  
                 
+            message=request.POST['message']  
+            
+            Contact.objects.create(name=name,email=email,message=message) 
+        con={"count":count,"uid":uid,"w_count":w_count}
+        return render(request,"contact.html",con,{"msg":"msg successfully submitted"})        
+    else:
+        return render(request,"login.html")        
+
+                    
 
 def Whishlist(request):
-    uid=User.objects.get(email=request.session['email'])
-    w_count=Add_Whishlist.objects.filter(user_id=uid).count()
-    count = addcart.objects.filter(user=uid).count()
-    
-    whish=Add_Whishlist.objects.filter(user_id=uid)
-    con={"uid":uid,"whish":whish,"w_count":w_count,"count":count}
-    return render(request,"whishlist.html",con)
-
-
-
-# def add_whishlist(request,id):
-#     uid=User.objects.get(email=request.session['email'])
-#     pp=product.objects.get(id=id)
-#     w_id=Add_Whishlist.objects.filter(product_id=pp,user_id=uid).exists()
-    
-#     if w_id:
+    if 'email' in request.session:
+        uid=User.objects.get(email=request.session['email'])
+        w_count=Add_Whishlist.objects.filter(user_id=uid).count()
+        count = addcart.objects.filter(user=uid).count()
         
-#         w_id=Add_Whishlist.objects.filter(product_id=pp,user_id=uid).exists()
-#         w_id.delete()
-#         messages.info(request,"Item Remove From Your WhishList")
-        
-#         return redirect("shop")
-#     else:
-#         Add_Whishlist.objects.create(user_id=uid,
-#                                      product_id=pp,
-#                                      price=pp.price,
-#                                      name=pp.name,
-#                                      image=pp.img,)
-#         messages.info(request,"Item Saved In Your WhishList")
-        
-#         return redirect("shop")
-  
-  
-  
+        whish=Add_Whishlist.objects.filter(user_id=uid)
+        con={"uid":uid,"whish":whish,"w_count":w_count,"count":count}
+        return render(request,"whishlist.html",con)
+    else:
+        return render(request,"login.html")        
 
 def add_whishlist(request, id):
     uid = User.objects.get(email=request.session['email'])
@@ -827,7 +703,7 @@ def add_whishlist(request, id):
             product_id=pp,
             price=pp.price,
             name=pp.name,
-            image=pp.img,)
+            image=pp.img)
         messages.info(request, "Item Saved In Your Wishlist")
         
     return redirect("shop")
@@ -840,5 +716,7 @@ def remove_whishlist(request, id):
     c=Add_Whishlist.objects.get(id=id)
     c.delete()
     return redirect('Whishlist')
+
+
 
 

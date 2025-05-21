@@ -15,4 +15,3 @@ admin.site.register(coupon_code)
 admin.site.register(Add_Whishlist)
 
 
-

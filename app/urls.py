@@ -21,7 +21,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('index', views.index, name='index'),
+    path('', views.index, name='index'),
     path('cart', views.cart, name='cart'),
     path('add_to_cart/<int:id>', views.add_to_cart, name='add_to_cart'),
     path('shop_add_to_card/<int:id>', views.shop_add_to_card, name='shop_add_to_card'),
@@ -32,7 +32,7 @@ urlpatterns = [
     path('shop_detail1/<int:id>', views.shop_detail1, name='shop_detail1'),
     path('shop', views.shop, name='shop'),
     path('testimonial', views.testimonial, name='testimonial'),
-    path('', views.login, name='login'),
+    path('login', views.login, name='login'),
     path('logout', views.logout, name='logout'),
     
     path('forget', views.forget, name='forget'),
@@ -44,6 +44,8 @@ urlpatterns = [
     path('billing_view', views.billing_view, name='billing_view'),
     
     path('checkout', views.checkout, name='checkout'),
+    path('show_orders', views.show_orders, name='show_orders'),
+    
     
     path('order_delete/<int:id>', views.order_delete, name='order_delete'),
     path('apply_coupon', views.apply_coupon, name='apply_coupon'),

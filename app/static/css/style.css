@@ -278,6 +278,7 @@
   position: relative;
   width: 120px;
   height: 120px;
+  
 }
 
 .featurs .featurs-item .featurs-icon::after {
@@ -290,6 +291,7 @@
   transform: translate(-50%);
   transform: rotate(45deg);
   background: var(--bs-secondary);
+  
 }
 /*** featurs End ***/
 
@@ -333,6 +335,11 @@
 }
 .fruite .fruite-item:hover {
   box-shadow: 0 0 55px rgba(0, 0, 0, 0.4);
+}
+
+.featurs .featurs-item:hover {
+  box-shadow: 0 0 55px rgba(0, 0, 0, 0.4);
+ 
 }
 
 .fruite .fruite-item .fruite-img {
@@ -532,3 +539,21 @@
   width: 100% !important;
   max-width: none !important;
 }
+
+/* login */
+
+.lgn_bg{
+
+  background: #f5f5f5; border-radius: 100px;
+  box-shadow: 10px 10px 30px #81c408;
+}
+
+/* .lgns_bg{
+
+  background: #f5f5f5; border-radius: 100px;
+  box-shadow: 10px 10px 30px #81c408;
+  padding: 30px;
+  width: 300px;
+  text-align: center;
+
+} */

@@ -1,16 +1,33 @@
-from django.db import models
-from django.forms import BaseModelForm
+from django.db import models # type: ignore
+from django.forms import BaseModelForm # type: ignore
+from django.contrib.auth.models import User # type: ignore
 
-# Create your models here.
-class User(models.Model):
-    name=models.CharField(max_length=255)
-    email=models.EmailField(unique=True,max_length=30)
-    password=models.CharField(max_length=50)
-    otp=models.IntegerField(default=123)
-    
-    def __str__(self) -> str:
-        return self.email
-    
+
+
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager # type: ignore
+from django.db import models # type: ignore
+
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("The Email must be set")
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)  # Now you can use this!
+        user.save()
+        return user
+
+class User(AbstractBaseUser):
+    email = models.EmailField(unique=True, max_length=30)
+    name = models.CharField(max_length=255)
+    otp = models.IntegerField(default=123)
+
+    USERNAME_FIELD = 'email'
+
+    objects = CustomUserManager()
+
+
+   
         
     
 class Contact(models.Model):
@@ -130,7 +147,7 @@ class coupon_code(models.Model):
 
     def __str__(self):
         return self.code
-    
+        
 
 class Rating(models.Model):
     rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])    
@@ -143,8 +160,9 @@ class Rating(models.Model):
 class Add_Whishlist(models.Model):
     product_id=models.ForeignKey(product,on_delete=models.CASCADE,blank=True,null=True)
     user_id=models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
-    image=models.ImageField(upload_to="media")
-    name=models.CharField(max_length=60)
+    image=models.ImageField(upload_to="media",null=True,blank=True)
+ 
+    name=models.CharField(max_length=60,null=True,blank=True)
     price=models.IntegerField()
     
      
@@ -152,4 +170,14 @@ class Add_Whishlist(models.Model):
         return self.name
     
     
+    
+
+from colorfield.fields import ColorField # type: ignore
+
+class MyModel(models.Model):
+    name = models.CharField(max_length=60,null=True,blank=True)
+    color = ColorField(default='#FF0000')
+    
+    def __str__(self):
+        return self.name
     
