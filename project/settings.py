@@ -51,23 +51,6 @@ INSTALLED_APPS = [
 
 
 
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        },
-        'OAUTH_PKCE_ENABLED': True,
-        'APP': {
-            'client_id': '201136111134-l0vvkcfp2p9ul1lt19jk2c3vtdn1hdb2.apps.googleusercontent.com',
-            'secret': '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',
-            'key': ''
-        }
-    }
-}
 
 
 MIDDLEWARE = [
@@ -157,6 +140,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
+
+# Email settings for sending OTPs
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # or your provider
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'arpitdabgar009@gmail.com'
+EMAIL_HOST_PASSWORD = 'vwtvjegrsyqosurr'
 
 
 
