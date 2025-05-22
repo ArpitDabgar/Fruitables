@@ -42,10 +42,10 @@ INSTALLED_APPS = [
     # 'social_django',
     'app',
     'django.contrib.sites',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
+    # 'allauth',
+    # 'allauth.account',
+    # 'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.google',
     'colorfield', # for Color
 ]
 
@@ -62,7 +62,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'social_django.middleware.SocialAuthExceptionMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
+    # 'allauth.account.middleware.AccountMiddleware',
     
 ]
 
@@ -152,15 +152,6 @@ EMAIL_HOST_PASSWORD = 'vwtvjegrsyqosurr'
 
 
 MESSAGE_TAGS={message_constants.DEBUG:'debug'}  
-
-
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'index'  # Redirect to this URL after login
-LOGOUT_REDIRECT_URL = 'login'
 
 
 
